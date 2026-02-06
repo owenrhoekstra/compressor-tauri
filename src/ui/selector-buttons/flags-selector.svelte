@@ -6,7 +6,7 @@
         onflagsChanged?: (flags: string[]) => void;
     }
 
-    let { algorithm, onflagsChanged }: Props = $props();
+    let { algorithm, onflagsChanged } = $props<Props>();
 
     let selectedFlags = $state<string[]>([]);
 
@@ -29,7 +29,7 @@
     }
 </script>
 
-<div class="flags-selector" transition:fade>
+<div class="flags-selector" transition:fade={{ global: true }}>
     <h3>Flags for {algorithm}</h3>
     <div class="flag-buttons">
         {#each availableFlags as flag}

@@ -5,10 +5,10 @@
         onback?: () => void;
     }
 
-    let { onback }: Props = $props();
+    let { onback } = $props<Props>();
 </script>
 
-<div class="extract-view" transition:fade>
+<div class="extract-view" transition:fade={{ global: true }}>
     <h2>Extract Archive</h2>
     <p>The extraction module is currently under development.</p>
     <div class="dummy-box">

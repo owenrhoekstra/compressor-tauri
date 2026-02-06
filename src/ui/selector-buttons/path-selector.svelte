@@ -6,7 +6,7 @@
         onstart?: () => void;
     }
 
-    let { onpathsChanged, onstart }: Props = $props();
+    let { onpathsChanged, onstart } = $props<Props>();
 
     let inputPath = $state("");
     let outputPath = $state("");
@@ -18,7 +18,7 @@
     let canStart = $derived(inputPath.trim() !== "" && outputPath.trim() !== "");
 </script>
 
-<div class="path-selector" transition:fade>
+<div class="path-selector" transition:fade={{ global: true }}>
     <div class="input-group">
         <label for="input-file">Input File:</label>
         <input id="input-file" type="text" bind:value={inputPath} placeholder="Select input file..." />

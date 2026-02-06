@@ -1,9 +1,9 @@
 <script lang="ts">
-  import ModeSelector from './ui/mode-selector.svelte';
+  import ModeSelector from './ui/selector-buttons/mode-selector.svelte';
   import ExtractView from './ui/extract-view.svelte';
   import SelectionParent from './ui/selection-parent.svelte';
-  import FlagsSelector from './ui/flags-selector.svelte';
-  import PathSelector from './ui/path-selector.svelte';
+  import FlagsSelector from './ui/selector-buttons/flags-selector.svelte';
+  import PathSelector from './ui/selector-buttons/path-selector.svelte';
   import ExecutionView from './ui/execution-view.svelte';
   import { fade } from 'svelte/transition';
 
@@ -57,15 +57,15 @@
   <h1>Compression Tool</h1>
 
   {#if mode === null}
-    <ModeSelector onselect={handleModeSelect} />
+    <ModeSelector onselectMode={handleModeSelect} />
   {:else if mode === 'compress'}
-    <div transition:fade>
+    <div transition:fade={{ global: true }}>
       <button class="back-button" onclick={goBack}>← Back</button>
       
       {#if isExecuting}
         <ExecutionView onstop={stopCompression} />
       {:else}
-        <SelectionParent onalgorithmSelected={handleAlgorithm}/>
+        <SelectionParent selected={chosenAlgorithm} onalgorithmSelected={handleAlgorithm}/>
 
         {#if chosenAlgorithm}
           {#key chosenAlgorithm}
@@ -85,7 +85,7 @@
       {/if}
     </div>
   {:else if mode === 'extract'}
-    <div transition:fade>
+    <div transition:fade={{ global: true }}>
       <button class="back-button" onclick={goBack}>← Back</button>
       <ExtractView />
     </div>
@@ -106,6 +106,7 @@
     background: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 4px;
+    color: black;
   }
 
   .back-button:hover {

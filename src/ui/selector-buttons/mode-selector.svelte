@@ -2,15 +2,16 @@
     import { fade } from 'svelte/transition';
 
     interface Props {
-        onselect: (mode: 'compress' | 'extract') => void;
+        onselectMode: (mode: 'compress' | 'extract') => void;
     }
 
-    let { onselect }: Props = $props();
+    // Correct way to declare a prop in Svelte
+    export let onselectMode: Props['onselectMode'];
 </script>
 
-<div class="mode-selector" transition:fade>
-    <button onclick={() => onselect('compress')}>Compress</button>
-    <button onclick={() => onselect('extract')}>Extract</button>
+<div class="mode-selector" transition:fade={{ duration: 300 }}>
+    <button on:click={() => onselectMode('compress')}>Compress</button>
+    <button on:click={() => onselectMode('extract')}>Extract</button>
 </div>
 
 <style>

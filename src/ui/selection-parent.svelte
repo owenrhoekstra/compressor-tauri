@@ -2,12 +2,17 @@
     import { fade } from 'svelte/transition';
 
     interface Props {
+        selected?: string | null;
         onalgorithmSelected?: (algo: string | null) => void;
     }
 
-    let { onalgorithmSelected }: Props = $props();
+    let { selected = null, onalgorithmSelected } = $props<Props>();
 
     let selectedAlgorithm = $state<string | null>(null);
+
+    $effect(() => {
+        selectedAlgorithm = selected;
+    });
     const algorithms = ["xz", "7zip", "lpaq", "paq8x"];
 
     function selectAlgorithm(algo: string) {
@@ -20,7 +25,7 @@
     }
 </script>
 
-<div class="algorithm-buttons" transition:fade>
+<div class="algorithm-buttons" transition:fade={{ global: true }}>
     {#each algorithms as algo}
         <button
                 onclick={() => selectAlgorithm(algo)}
