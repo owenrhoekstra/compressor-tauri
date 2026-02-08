@@ -1,0 +1,70 @@
+xz:
+
+-z - compress
+-d - decompress
+-0-9 - comrpession ratio, 6 is default
+-e - extreme compression, appended to 0-9
+-T - number of threads, 0 is default and uses as many threads as cores
+-k - keep original file
+-c - keeps original and pipes output to another commands input (doesn't write output)
+--block-size=SIZE - SIZE in bytes for each block, accepts single letter suffix
+--lzma2[=OPTS] - OPTS is comma separated list, insert: dict=NUM (NUM=4K-1536M, def 8M), mode=MODE (MODE=fast,normal, def normal)
+--info-memory - show memory usage stats
+-C - checksum to check corruption, accepts crc64 (def), crc32 (faster), sha256 (strongest)
+
+
+Seven Zip (7zz):
+
+a - add files to archive
+x - extract files from archive
+-mmtN - N=# of CPU threads
+-mxN - N=compression level 1-9
+-o - output directory
+-p - password for archive
+-so - write data to stdout (like -c above)
+-t - output format, use 7z
+-ms=[] - solid compression, []=ON/OFF
+-md - dictionary size, 4K-anything (2G is good upper limit but can go higher)
+-m0 - algorithm, force lzma2
+
+
+zpaq:
+
+a - add files
+x - extract files
+-f - force compression
+-key X - add password X to archive
+-mN - compression level, 0-5, def 1
+-tN - number of threads, def 0 (=12 cores)
+-sN - show summary, 0=no summary, >=1 shows summary (no upper bound, more talkative with higher number?)
+
+
+paq8px:
+
+no specific flag to compress
+-d - decompress
+-level -  
+  -1 -2 -3 -4          | Compress using less memory (529, 543, 572, 630 MB)
+  -5 -6 -7 -8          | Use more memory (747, 980, 1446, 2377 MB)
+  -9 -10 -11 -12       | Use even more memory (4241, 7968, 15421, 29305 MB)
+  -0                   | Segment and transform only, no compression
+  -0L                  | Segment and transform then LSTM-only compression (alternative: -lstmonly
+-L - enable LSTM model (+24mb memory per block type)
+-A - use adaptive learning rate
+-S - skip RGB colour transform
+-B - brute force DEFLATE detection
+-E - pre-train x86/x64 model (if compressing executables)
+-T - pre-train text models (good for source code)
+-forcebinary - force binary mode
+-forcetext - force text mode
+-v - verbose output
+
+
+tar:
+
+-c - create file
+-x - extract file
+-b - use # 512-byte record per I/O block
+-v - verbose
+-k - keep original file
+-O - write to stdout
