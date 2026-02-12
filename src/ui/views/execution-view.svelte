@@ -5,7 +5,7 @@
         onstop?: () => void;
     }
 
-    let { onstop } = $props<Props>();
+    let { onstop }: Props = $props();
 
     let progress = $state(0);
 
@@ -22,7 +22,7 @@
     });
 </script>
 
-<div class="execution-view" transition:fade={{ global: true }}>
+<div class="execution-view" transition:fade|global>
     <h2>Compressing...</h2>
     <div class="progress-container">
         <div class="progress-bar" style="width: {progress}%"></div>

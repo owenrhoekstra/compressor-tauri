@@ -1,7 +1,7 @@
 <script lang="ts">
     let selectedAlgorithm = $state<string | null>(null);
 
-    const algorithms = ["xz", "7zip", "lpaq", "paq8x"];
+    const algorithms = ["zstd", "xz", "7zip", "zpaq", "paq8x"];
 </script>
 
 <div class="algorithm-buttons">

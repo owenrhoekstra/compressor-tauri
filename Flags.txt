@@ -2,7 +2,7 @@ xz:
 
 -z - compress
 -d - decompress
--0-9 - comrpession ratio, 6 is default
+-0-9 - compression ratio, 6 is default
 -e - extreme compression, appended to 0-9
 -T - number of threads, 0 is default and uses as many threads as cores
 -k - keep original file
@@ -68,3 +68,32 @@ tar:
 -v - verbose
 -k - keep original file
 -O - write to stdout
+
+
+zstd:
+
+- compress (default)
+-d - decompress
+-# - compression level 1-19 (def 3)
+--ultra - allow levels 20-22
+-TN - number of threads (0 = auto/core count)
+-r - recurse into directories
+-o FILE - write output to FILE
+-c - write to stdout
+-k - keep original files
+--rm - remove input after success
+--output-dir-flat DIR - store outputs in DIR
+--output-dir-mirror DIR - mirror directory tree in DIR
+--long[=N] - long distance matching / window size
+-D DICT - use dictionary file
+--train - build dictionary from files
+--maxdict=N - limit dictionary size when training
+--rsyncable - rsync-friendly compression
+-BN - job/block size
+--adapt - adapt compression to I/O
+--format=zstd|gzip|xz|lzma|lz4 - output format
+
+# decompression / info
+-l - list compressed file info
+--test - integrity check
+-MN - decompression memory limit (MB)

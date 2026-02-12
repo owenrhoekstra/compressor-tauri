@@ -1,17 +1,18 @@
 <script lang="ts">
   import ModeSelector from './ui/selector-buttons/mode-selector.svelte';
-  import ExtractView from './ui/extract-view.svelte';
-  import SelectionParent from './ui/selection-parent.svelte';
+  import ExtractView from './ui/views/extract-view.svelte';
+  import SelectionParent from './ui/parents/selection-parent.svelte';
   import FlagsSelector from './ui/selector-buttons/flags-selector.svelte';
   import PathSelector from './ui/selector-buttons/path-selector.svelte';
-  import ExecutionView from './ui/execution-view.svelte';
+  import ExecutionView from './ui/views/execution-view.svelte';
+  import ConfirmationView from './ui/views/confirmation-view.svelte';
+  import { compressionStore } from './domain/ui-state-store.svelte.js';
+  import { startCompression } from './domain/compression-api';
   import { fade } from 'svelte/transition';
 
   let mode = $state<'compress' | 'extract' | null>(null);
-  let chosenAlgorithm = $state<string | null>(null);
-  let chosenFlags = $state<string[]>([]);
-  let paths = $state({ input: '', output: '' });
   let isExecuting = $state(false);
+  let isConfirming = $state(false);
 
   function handleModeSelect(selectedMode: 'compress' | 'extract') {
     mode = selectedMode;
@@ -19,37 +20,44 @@
 
   function goBack() {
     mode = null;
-    chosenAlgorithm = null;
-    chosenFlags = [];
-    paths = { input: '', output: '' };
+    compressionStore.reset();
     isExecuting = false;
+    isConfirming = false;
   }
 
   function handleAlgorithm(algo: string | null) {
-    chosenAlgorithm = algo;
-    // Reset subsequent tiers
-    chosenFlags = [];
-    paths = { input: '', output: '' };
-    console.log('Selected algorithm:', chosenAlgorithm);
+    compressionStore.setAlgorithm(algo);
   }
 
   function handleFlags(flags: string[]) {
-    chosenFlags = flags;
+    compressionStore.setFlags(flags);
   }
 
   function handlePaths(newPaths: { input: string, output: string }) {
-    paths = newPaths;
+    compressionStore.setPaths(newPaths.input, newPaths.output);
   }
 
-  function startCompression() {
+  function goToConfirmation() {
+    isConfirming = true;
+  }
+
+  async function handleConfirm() {
+    isConfirming = false;
     isExecuting = true;
+    await startCompression(
+      compressionStore.algorithm,
+      compressionStore.flags,
+      compressionStore.inputPath,
+      compressionStore.outputPath
+    );
+  }
+
+  function handleBackFromConfirm() {
+    isConfirming = false;
   }
 
   function stopCompression() {
     isExecuting = false;
-    // Optionally reset or keep state?
-    // User said "all goes away and progress bar comes up", 
-    // implying we might want to stay in that view until done or stopped.
   }
 </script>
 
@@ -59,33 +67,39 @@
   {#if mode === null}
     <ModeSelector onselectMode={handleModeSelect} />
   {:else if mode === 'compress'}
-    <div transition:fade={{ global: true }}>
+    <div transition:fade|global>
       <button class="back-button" onclick={goBack}>← Back</button>
       
       {#if isExecuting}
         <ExecutionView onstop={stopCompression} />
+      {:else if isConfirming}
+        <ConfirmationView 
+          onconfirm={handleConfirm}
+          onback={handleBackFromConfirm}
+        />
       {:else}
-        <SelectionParent selected={chosenAlgorithm} onalgorithmSelected={handleAlgorithm}/>
+        <SelectionParent 
+          selected={compressionStore.algorithm} 
+          onalgorithmSelected={handleAlgorithm}
+        />
 
-        {#if chosenAlgorithm}
-          {#key chosenAlgorithm}
+        {#if compressionStore.algorithm}
+          {#key compressionStore.algorithm}
             <FlagsSelector
-              algorithm={chosenAlgorithm}
+              algorithm={compressionStore.algorithm}
               onflagsChanged={handleFlags}
             />
           {/key}
 
-          {#if chosenFlags.length > 0}
-            <PathSelector
-              onpathsChanged={handlePaths}
-              onstart={startCompression}
-            />
-          {/if}
+          <PathSelector
+            onpathsChanged={handlePaths}
+            onstart={goToConfirmation}
+          />
         {/if}
       {/if}
     </div>
   {:else if mode === 'extract'}
-    <div transition:fade={{ global: true }}>
+    <div transition:fade|global>
       <button class="back-button" onclick={goBack}>← Back</button>
       <ExtractView />
     </div>

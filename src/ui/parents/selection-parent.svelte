@@ -6,14 +6,14 @@
         onalgorithmSelected?: (algo: string | null) => void;
     }
 
-    let { selected = null, onalgorithmSelected } = $props<Props>();
+    let { selected = null, onalgorithmSelected }: Props = $props();
 
     let selectedAlgorithm = $state<string | null>(null);
 
     $effect(() => {
         selectedAlgorithm = selected;
     });
-    const algorithms = ["xz", "7zip", "lpaq", "paq8x"];
+    const algorithms = ["zstd", "xz", "7zip", "zpaq", "paq8x"];
 
     function selectAlgorithm(algo: string) {
         if (selectedAlgorithm === algo) {
@@ -25,7 +25,7 @@
     }
 </script>
 
-<div class="algorithm-buttons" transition:fade={{ global: true }}>
+<div class="algorithm-buttons" transition:fade|global>
     {#each algorithms as algo}
         <button
                 onclick={() => selectAlgorithm(algo)}
