@@ -18,7 +18,7 @@
 
     let canStart = $derived(inputPath.trim() !== "" && outputPath.trim() !== "");
 
-    async function selectFile() {
+    async function selectInputFile() {
         const selected = await open({
             multiple: false,
             directory: false,
@@ -28,7 +28,17 @@
         }
     }
 
-    async function selectDirectory() {
+    async function selectInputFolder() {
+        const selected = await open({
+            multiple: false,
+            directory: true,
+        });
+        if (selected) {
+            inputPath = selected;
+        }
+    }
+
+    async function selectOutputDirectory() {
         const selected = await open({
             multiple: false,
             directory: true,
@@ -41,18 +51,19 @@
 
 <div class="path-selector" transition:fade|global>
     <div class="input-group">
-        <label for="input-file">Input File:</label>
+        <label for="input-file">Input (File or Folder):</label>
         <div class="input-row">
-            <input id="input-file" type="text" bind:value={inputPath} placeholder="Select input file..." />
-            <button type="button" class="browse-button" onclick={selectFile}>Browse</button>
+            <input id="input-file" type="text" bind:value={inputPath} placeholder="Select input..." />
+            <button type="button" class="browse-button" onclick={selectInputFile}>File</button>
+            <button type="button" class="browse-button" onclick={selectInputFolder}>Folder</button>
         </div>
     </div>
 
     <div class="input-group">
-        <label for="output-file">Output File:</label>
+        <label for="output-file">Output Folder:</label>
         <div class="input-row">
             <input id="output-file" type="text" bind:value={outputPath} placeholder="Select output destination..." />
-            <button type="button" class="browse-button" onclick={selectDirectory}>Browse</button>
+            <button type="button" class="browse-button" onclick={selectOutputDirectory}>Browse</button>
         </div>
     </div>
 

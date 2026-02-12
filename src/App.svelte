@@ -44,12 +44,6 @@
   async function handleConfirm() {
     isConfirming = false;
     isExecuting = true;
-    await startCompression(
-      compressionStore.algorithm,
-      compressionStore.flags,
-      compressionStore.inputPath,
-      compressionStore.outputPath
-    );
   }
 
   function handleBackFromConfirm() {

@@ -1,6 +1,10 @@
+mod parents;
+
+use parents::dispatch::dispatcher_cleaner;
+
 #[tauri::command]
-fn start_compression(algorithm: Option<String>, flags: Vec<String>, input_path: String, output_path: String) {
-    println!("Rust received: algorithm={:?}, flags={:?}, input_path={}, output_path={}", algorithm, flags, input_path, output_path);
+fn start_compression(app: tauri::AppHandle, algorithm: Option<String>, flags: Vec<String>, input_path: String, output_path: String) -> Result<(), String> {
+    dispatcher_cleaner::dispatch(app, algorithm, flags, input_path, output_path)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -21,3 +25,4 @@ pub fn run() {
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
+
