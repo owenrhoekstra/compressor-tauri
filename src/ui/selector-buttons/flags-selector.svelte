@@ -50,6 +50,19 @@
                     prefix: "-T"
                 }
             },
+            {
+                value: "style",
+                label: "Output Style",
+                children: ["Multi-File", "Single-File"],
+                isPlaceholder: true
+            },
+            {
+                value: "--long",
+                label: "Long Distance Matching",
+                children: ["27", "28", "29", "30", "31"],
+                isPlaceholder: true,
+                childPrefix: "--long="
+            },
         ],
         xz: [
             {
@@ -101,6 +114,7 @@
             {
                 value: "-p",
                 label: "Password",
+                isPlaceholder: true,
                 input: {
                     placeholder: "Password",
                     prefix: "-p"
@@ -113,35 +127,87 @@
                 isPlaceholder: true,
             },
             {
-                value: "-mmt",
+                value: "threads",
                 label: "# of Threads",
+                isPlaceholder: true,
                 input: {
                     placeholder: "0 = auto",
-                    prefix: "-nmt"
+                    prefix: "-mmt"
                 }
             },
             {
-                value: "md",
+                value: "-md",
                 label: "Dictionary Size",
+                isPlaceholder: true,
                 children: ["16M", "32M", "64M", "128M", "256M", "512M", "1G", "2G", "4G"],
 
             }
 
         ],
         "zpaq": [
-
+            {
+                value: "compress",
+                label: "Compression Level",
+                children: ["1", "2", "3", "4", "5"],
+                isPlaceholder: true,
+                childPrefix: "-m"
+            },
+            {
+                value: "threads",
+                label: "# of Threads",
+                isPlaceholder: true,
+                input: {
+                    placeholder: "0 = auto",
+                    prefix: "-t"
+                }
+            },
+            {
+                value: "password",
+                label: "Password",
+                isPlaceholder: true,
+                input: {
+                    placeholder: "Password",
+                    prefix: "-key "
+                }
+            },
+            {
+                value: "verbose",
+                label: "Verbose",
+                children: ["On", "Off"],
+                childPrefix: "-s",
+                isPlaceholder: true
+            }
         ],
         "paq8x": [
             {
                 value: "level",
                 label: "Compression Level",
-                children: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
                 isPlaceholder: true,
-                childPrefix: "-"
+                input: {
+                    placeholder: "1 - 12, 0z, 0L",
+                    prefix: "-"
+                }
             },
-            { value: "-L", label: "Enable LSTM" },
-            { value: "-A", label: "Adaptive Learning" },
-            { value: "-v", label: "Verbose" }
+            {
+                value: "-L",
+                label: "Enable LSTM"
+            },
+            {
+                value: "-T",
+                label: "Pre-Train LSTM on Text"
+            },
+            {
+                value: "-E",
+                label: "Pre-Train LSTM on Binaries"
+            },
+            {
+                value: "-A",
+                label: "Adaptive Learning"
+            },
+            {
+                value: "-v",
+                label: "Verbose"
+            }
         ]
     };
 
@@ -178,6 +244,11 @@
         }
 
         if (algorithm === 'zstd') {
+            if (result.includes('styleMulti-File')) {
+                result.push('-r');
+            }
+            result = result.filter(f => !f.startsWith('style'));
+
             const ultraFlag = result.find(f => f.startsWith('ultra-'));
             if (ultraFlag) {
                 const level = ultraFlag.split('-')[1];
@@ -185,6 +256,16 @@
                 result = result.filter(f => !f.startsWith('ultra-') && !/^-(\d+)$/.test(f));
                 result.push('-' + level);
                 result.push('--ultra');
+            }
+        }
+
+        if (algorithm === 'zpaq') {
+            // Map verbose On/Off to numeric values appended to -s
+            const hasVerboseOn = result.includes('-sOn');
+            const hasVerboseOff = result.includes('-sOff');
+            if (hasVerboseOn || hasVerboseOff) {
+                result = result.filter(f => f !== '-sOn' && f !== '-sOff');
+                result.push(hasVerboseOn ? '-s1' : '-s0');
             }
         }
 
@@ -256,14 +337,14 @@
                         class:selected={
                             selectedFlags.includes(flag.value) || 
                             (flag.children && flag.children.some(child => selectedFlags.includes((flag.childPrefix ?? flag.value) + child + (flag.childSuffix ?? "")))) ||
-                            (flag.input && selectedFlags.some(f => f.startsWith(flag.input.prefix) && (flag.input.prefix !== '-' || /^-(\d+)$/.test(f))))
+                            (flag.input && selectedFlags.some(f => f.startsWith(flag.input?.prefix ?? "") && (flag.input?.prefix !== '-' || /^-(\d+)$/.test(f))))
                         }
                 >
                     {flag.label}
                 </button>
 
                 {#if openMenus[flag.value]}
-                    <div class="dropdown">
+                    <div class="dropdown" transition:fade>
 
                         {#if flag.children}
                             {#each flag.children as child}
@@ -297,40 +378,83 @@
 <style>
     .flags-selector {
         margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
+
+    .flags-selector h3 {
+        margin: 0 0 0.5rem 0;
+        text-align: center;
+    }
+
     .flag-buttons {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.6rem;
+        row-gap: 0.6rem;
         flex-wrap: wrap;
+        justify-content: center;
     }
 
     button {
-        padding: 0.5rem 1rem;
+        padding: 0.55rem 1rem;
         cursor: pointer;
+        border: 1px solid #444;
+        background: #2a2a2a;
+        color: #ddd;
+        border-radius: 6px;
+        transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+    }
+
+    button:hover {
+        background-color: #3a3a3a;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    button:active {
+        transform: translateY(1px);
     }
 
     button.selected {
         background-color: #007acc;
         color: white;
+        border-color: #007acc;
+        box-shadow: 0 2px 10px rgba(0,122,204,0.35);
     }
+
     .flag-group {
         position: relative;
     }
 
     .dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
         display: flex;
         flex-direction: column;
-        margin-top: 0.25rem;
         background: #1e1e1e;
         border: 1px solid #444;
-        padding: 0.25rem;
+        padding: 0.4rem;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+        z-index: 10;
+        min-width: 180px;
     }
 
     .subflag {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        padding: 0.4rem 0.6rem;
+        text-align: left;
     }
+
     .subinput {
-        padding: 0.4rem;
-        font-size: 0.85rem;
+        padding: 0.45rem 0.5rem;
+        font-size: 0.9rem;
+        border-radius: 6px;
+        border: 1px solid #555;
+        background: #2a2a2a;
+        color: #eee;
     }
 </style>

@@ -39,16 +39,36 @@
 <style>
     .algorithm-buttons {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
     }
 
     button {
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1.1rem;
         cursor: pointer;
+        border: 1px solid #444;
+        background: #2a2a2a;
+        color: #ddd;
+        border-radius: 6px;
+        transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+    }
+
+    button:hover {
+        background-color: #3a3a3a;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    button:active {
+        transform: translateY(1px);
     }
 
     button.selected {
         background-color: #007acc;
         color: white;
+        border-color: #007acc;
+        box-shadow: 0 2px 10px rgba(0,122,204,0.35);
     }
 </style>

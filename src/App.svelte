@@ -113,6 +113,11 @@
     padding: 2rem;
   }
 
+  h1 {
+    text-align: center;
+    margin: 0 0 1rem 0;
+  }
+
   .back-button {
     margin-bottom: 1rem;
     padding: 0.5rem 1rem;
@@ -121,9 +126,15 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     color: black;
+    transition: background-color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
   }
 
   .back-button:hover {
     background: #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .back-button:active {
+    transform: translateY(1px);
   }
 </style>
